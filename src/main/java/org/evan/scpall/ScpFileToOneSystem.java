@@ -11,10 +11,12 @@ public class ScpFileToOneSystem implements Callable<String> {
 
     private String remoteSystem;
     private File fileToCopy;
+    private String destination;
 
-    public ScpFileToOneSystem(String remoteSystem, File fileToCopy) {
+    public ScpFileToOneSystem(String remoteSystem, File fileToCopy, String destination) {
         this.remoteSystem = remoteSystem;
         this.fileToCopy = fileToCopy;
+        this.destination = destination;
     }
 
     public String call() throws Exception {
@@ -25,7 +27,7 @@ public class ScpFileToOneSystem implements Callable<String> {
             String[] cmd = {
                     "/bin/zsh",
                     "-c",
-                    buildTheCommand(remoteSystem, fileToCopy)
+                    buildTheCommand(remoteSystem, fileToCopy, destination)
             };
 
             Process p = Runtime.getRuntime().exec(cmd);
@@ -45,7 +47,7 @@ public class ScpFileToOneSystem implements Callable<String> {
         return returnMessage;
     }
 
-    public static String buildTheCommand(String remoteSystem, File fileToCopy) {
+    public static String buildTheCommand(String remoteSystem, File fileToCopy, String destination) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("source ~/.zshrc; echo Starting ");
@@ -54,7 +56,9 @@ public class ScpFileToOneSystem implements Callable<String> {
         sb.append(fileToCopy.getAbsoluteFile());
         sb.append(" ");
         sb.append(remoteSystem);
-        sb.append(":; echo Finished ");
+        sb.append(":");
+        sb.append(destination);
+        sb.append("; echo Finished ");
         sb.append(remoteSystem);
 
         return sb.toString();

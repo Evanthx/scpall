@@ -56,13 +56,13 @@ public class AppMain {
     }
 
 
-    public static void scpTheFileToAllSystems(Set<String> remoteSystems, File fileToCopy) {
+    public static void scpTheFileToAllSystems(Set<String> remoteSystems, File fileToCopy, String destination) {
         ExecutorService pool = Executors.newFixedThreadPool(5);
 
         List<Future<String>> futures = new ArrayList<>();
 
         for (String remoteSystem:remoteSystems) {
-            futures.add(pool.submit(new ScpFileToOneSystem(remoteSystem, fileToCopy)));
+            futures.add(pool.submit(new ScpFileToOneSystem(remoteSystem, fileToCopy, destination)));
         }
 
         for(Future<String> future : futures){
@@ -83,8 +83,8 @@ public class AppMain {
     public static void main( String[] args )
     {
         //Now, was a file specified?
-        if (args.length != 2 || StringUtils.isEmpty(args[0]) || StringUtils.isEmpty(args[1])) {
-            System.out.println( "Usage: scpall <alias from /etc/clusters> <file to scp to those systems>.\nSample line from the clusters file:\nnifistage ubuntu@nifi-1.east.usermind.com ubuntu@nifi-2.east.usermind.com ubuntu@nifi-3.east.usermind.com" );
+        if (args.length < 2 || args.length > 3 || StringUtils.isEmpty(args[0]) || StringUtils.isEmpty(args[1])) {
+            System.out.println( "Usage: scpall <alias from /etc/clusters> <file to scp to those systems> <optional path to write the file on the remote system>.\nSample line from the clusters file:\nnifistage ubuntu@nifi-1.east.usermind.com ubuntu@nifi-2.east.usermind.com ubuntu@nifi-3.east.usermind.com" );
             return;
         }
 
@@ -96,8 +96,15 @@ public class AppMain {
             System.out.println( "File not found: " + args[1] );
         }
 
+        String destination = "";
+        if (args.length > 2) {
+            destination = args[2];
+            if (StringUtils.isBlank(destination))
+                destination = "";
+        }
+
         //Now walk each system and scp the file up to it.
-        scpTheFileToAllSystems(remoteSystems, fileToCopy);
+        scpTheFileToAllSystems(remoteSystems, fileToCopy, destination);
     }
 
 }
