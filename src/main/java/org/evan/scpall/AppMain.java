@@ -82,9 +82,16 @@ public class AppMain {
 
     public static void main( String[] args )
     {
+        String usageHint = "Usage: scpall <alias from /etc/clusters> <file to scp to those systems> <optional path to write the file on the remote system>.\n\n" +
+                "If path is included -\n" +
+                "   A slash at the start will be a complete path\n" +
+                "   No slash at the start will be taken as a path under the home directory\n" +
+                "   End with a filename to specify the destination file name, otherwise it will stay the same.\n\n" +
+                "Example line in /etc/clusters:\n" +
+                "   nifistage ubuntu@nifi-1.east.usermind.com ubuntu@nifi-2.east.usermind.com ubuntu@nifi-3.east.usermind.com";
         //Now, was a file specified?
         if (args.length < 2 || args.length > 3 || StringUtils.isEmpty(args[0]) || StringUtils.isEmpty(args[1])) {
-            System.out.println( "Usage: scpall <alias from /etc/clusters> <file to scp to those systems> <optional path to write the file on the remote system>.\nSample line from the clusters file:\nnifistage ubuntu@nifi-1.east.usermind.com ubuntu@nifi-2.east.usermind.com ubuntu@nifi-3.east.usermind.com" );
+            System.out.println( usageHint );
             return;
         }
 
